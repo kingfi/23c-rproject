@@ -2,18 +2,26 @@
 title: "Pol. Parties Survey Analysis"
 output: html_document
 ---
+**NB**: Run `brew install pre-commit` in your macOS terminal before running the cell below!
+```{r, echo=FALSE}
+install.packages("styler")
+install.packages("spelling")
+install.packages("remotes")
+remotes::install_github("lorenzwalthert/precommit")
+load("./Global Party Survey by Expert 29 Dec 2019.RData")
+```
 
 _From the report, motivation_: The questionnaire for the Global Party Survey was administered through the Qualtrics platform. It includes 21 core items measured using ten-point continuous scales. These were designed to identify each party’s current ideological values, their position on several issues such as immigration, nationalism and environmental protection, and their use of populist rhetoric.
 
 ```{r}
-load('./Global Party Survey by Expert 29 Dec 2019.RData')
+load("./Global Party Survey by Expert 29 Dec 2019.RData")
 ```
 
 ### US Party Ideologies
 Presumably, those of us working on and reading through this analysis will have some shared familiarity with the party system in the US. For that reason, it might be valuable to establish a conceptual baseline using American political parties:
 
 ```{r}
-usa_responses <- subset(table, ISO == 'USA')
+usa_responses <- subset(table, ISO == "USA")
 cat("There were", nrow(usa_responses), "responses from US political experts.")
 ```
 
@@ -45,3 +53,9 @@ cat("Q3.4 — Republicans: ", q3.4_republican, " Democrats: ", q3.4_democrat, "\
 ```
 
 Given a theoretical mean of $5$, the experts identified the Democrats as closer to the center _both_ economically and socially than Republicans, though further to the left socially than economically. Additionally, both parties treat economic policy as central to their platforms, but the Democrats are reported to consider social policy slightly less important.
+
+Let's visualize the distribution of responses for question 3.1 (economic ideological alignment):
+```{r}
+hist(usa_responses$Q3.1_1, col = rgb(1, 0, 0, 0.5), xlim = c(0, 10), main = "US Party Economic Alignment", xlab = "Ideological Alignment")
+hist(usa_responses$Q3.1_2, col = rgb(0, 0, 1, 0.5), add = TRUE)
+```
