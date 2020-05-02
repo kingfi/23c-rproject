@@ -4,7 +4,7 @@ install.packages("modules")
 install.packages("lintr")
 install.packages("styler")
 install.packages("spelling")
-install.packages("dplyr")
+install.packages("tidyverse")
 
 install.packages("remotes")
 remotes::install_github("lorenzwalthert/precommit")

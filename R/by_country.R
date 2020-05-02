@@ -5,39 +5,33 @@ import(stringr)
 load("./data/Global Party Survey by Expert 29 Dec 2019.RData")
 
 ## ----------------------------------------------------------------
-## Analysis By Country
+## Accessors by Country ISO Code
 ## ----------------------------------------------------------------
 
-country_data <- function(iso) {
+export("data")
+data <- function(iso) {
   subset(table, table$ISO == iso)
 }
-
-usa_responses <- country_data("USA")
 
 # ------------------------------
 
 export("mean_responses")
-mean_responses_by_country <- function(iso) {
-  country_data <- country_data(iso)
+mean_responses <- function(iso) {
+  data <- data(iso)
 
-  numeric_columns <- country_data %>% select_if(is.numeric)
+  numeric_columns <- data %>% select_if(is.numeric)
   colMeans(numeric_columns, na.rm = TRUE)
 }
-
-mr <- mean_responses_by_country("USA")
-names(mr)
 
 # ------------------------------
 
 export("party_names")
-party_names_by_country <- function(iso) {
-  country_data <- country_data(iso)
+party_names <- function(iso) {
+  data <- data(iso)
 
-  party_names <- country_data[1, ] %>% select(starts_with("CPARTY"))
+  party_names <- data[1, ] %>% select(starts_with("CPARTY"))
   party_names[party_names != ""]
 }
-
-party_names_by_country("USA")
 
 # ------------------------------
 
@@ -81,20 +75,17 @@ export("mean_responses_for_parties")
 mean_responses_for_parties <- function(iso) {
   new_df <- gen_df()
 
-  party_names <- party_names_by_country(iso)
-  mean_responses <- mean_responses_by_country(iso)
+  party_names <- party_names(iso)
+  mean_responses <- mean_responses(iso)
 
   for (i in seq_along(party_names)) {
     responses <- get_mean_responses_for_party(mean_responses, i)
-    print(party_names[i])
 
     new_df[i, 1] <- party_names[i]
     for (j in 2:length(responses)) {
-      new_df[i, j] <- responses[j]
+      new_df[i, j] <- responses[j - 1]
     }
   }
 
   new_df
 }
-
-mean_responses_for_parties_by_country("USA")
