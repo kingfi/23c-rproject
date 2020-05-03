@@ -8,6 +8,9 @@
 ## Data
 Please look through the `/docs` directory for information regarding the source and collection methods for the original data set.
 
+Of the files in the `/data` directory, the one currently in use is the dataset from April 1, 2020.
+
+(**No longer true**)
 The original data set was formatted in such a way that made per-party data exploration cumbersome. Please see the script `/data/data.R` for information on how the original table was converted to a dataframe that better fit our needs (found in `responses.RData`).
 
 ## Structure

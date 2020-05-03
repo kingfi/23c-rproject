@@ -6,76 +6,17 @@ output: html_document
 _From the report, motivation_: The questionnaire for the Global Party Survey was administered through the Qualtrics platform. It includes 21 core items measured using ten-point continuous scales. These were designed to identify each party’s current ideological values, their position on several issues such as immigration, nationalism and environmental protection, and their use of populist rhetoric.
 ```{r setup}
 lib <- modules::use("R")
+load("./data/Global Party Survey by Party Stata V2_1_Apr_2020.RData")
 ```
 
-### US Party Ideologies
-Presumably, those of us working on and reading through this analysis will have some shared familiarity with the party system in the US. For that reason, it might be valuable to establish a conceptual baseline using American political parties:
+Questions relevant to party ideological alignment:
+* Q3.1 — Economic Alignment
+* Q3.3 — Social Alignment
 
 ```{r}
-lib$by_country$party_names("USA")
-```
 
-Note that the US experts only identified/discussed the two major parties: Republican and Democrat. The questions addressing party positions are as follows:
-
-* Q3.1 — ECONOMIC LEFT (0) to ECONOMIC RIGHT (10)
-* Q3.2 — ECONOMIC ISSUES UNIMPORTANT TO PARTY PLATFORM (0) to ECONOMIC ISSUES VERY IMPORTANT TO PARTY PLATFORM (10)
-* Q3.3 — SOCIAL LEFT (0) to SOCIAL RIGHT (10)
-* Q3.4 — SOCIAL ISSUES UNIMPORTANT TO PARTY PLATFORM (0) to SOCIAL ISSUES VERY IMPORTANT TO PARTY PLATFORM (10)
-
-Let's examine the US experts' responses:
-
-```{r}
-usa_mean_responses <- lib$by_country$mean_responses("USA")
-cat("Q3.1 — Republicans: ", usa_mean_responses["Q3.1_1"], " Democrats: ", usa_mean_responses["Q3.1_2"], "\n")
-cat("Q3.2 — Republicans: ", usa_mean_responses["Q3.2_1"], " Democrats: ", usa_mean_responses["Q3.2_2"], "\n")
-cat("Q3.3 — Republicans: ", usa_mean_responses["Q3.3_1"], " Democrats: ", usa_mean_responses["Q3.3_2"], "\n")
-cat("Q3.4 — Republicans: ", usa_mean_responses["Q3.4_1"], " Democrats: ", usa_mean_responses["Q3.4_2"], "\n")
 ```
 
 ```{r}
-df <- lib$by_country$mean_responses_for_parties("USA")
-df
-```
-
-```{r}
-df <- lib$by_country$mean_responses_for_parties("GBR")
-df
-```
-
-Given a theoretical mean of $5$, the experts identified the Democrats as closer to the center _both_ economically and socially than Republicans, though further to the left socially than economically. Additionally, both parties treat economic policy as central to their platforms, but the Democrats are reported to consider social policy slightly less important.
-
-Let's visualize the distribution of responses for question 3.1 (economic ideological alignment):
-```{r}
-usa_responses <- lib$by_country$data("USA")
-
-hist(
-  usa_responses$Q3.1_1,
-  col = rgb(1, 0, 0, 0.5),
-  xlim = c(0, 10),
-  main = "US Parties, Economic Alignment",
-  xlab = "Ideological Alignment"
-)
-hist(usa_responses$Q3.1_2,
-  col = rgb(0, 0, 1, 0.5),
-  add = TRUE
-)
-```
-
-
-```{r}
-lib$by_region$iso_by_region(1)
-```
-
-```{r}
-# lib$by_region$mean_responses_for_all_parties(1)
-```
-
-```{r}
-mean_responses <- lib$by_country$mean_responses_for_parties("GBR")
-lib$graphing$lr_party_scatterplot(mean_responses)
-```
-
-```{r}
-mean_responses <- lib$by_country$mean_responses_for_parties("MEX")
-lib$graphing$lr_party_scatterplot(mean_responses)
+hist(responses$Q3.3, col = "orange")
 ```
