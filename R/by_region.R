@@ -1,5 +1,5 @@
-by_country <- use("./R/by_country.R")
 import(dplyr)
+by_country <- use("./R/by_country.R")
 
 # If this were a real package, we'd want dependency injection here
 load("./data/Global Party Survey by Expert 29 Dec 2019.RData")

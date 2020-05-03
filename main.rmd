@@ -61,11 +61,6 @@ hist(usa_responses$Q3.1_2,
 )
 ```
 
-```{r}
-us_party_names <- lib$by_country$mean_responses("USA")
-us_party_names
-```
-
 
 ```{r}
 lib$by_region$iso_by_region(1)
@@ -77,5 +72,10 @@ lib$by_region$iso_by_region(1)
 
 ```{r}
 mean_responses <- lib$by_country$mean_responses_for_parties("GBR")
+lib$graphing$lr_party_scatterplot(mean_responses)
+```
+
+```{r}
+mean_responses <- lib$by_country$mean_responses_for_parties("MEX")
 lib$graphing$lr_party_scatterplot(mean_responses)
 ```

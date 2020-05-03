@@ -1,5 +1,6 @@
 import(dplyr)
 import(stringr)
+utils <- use("./R/utils.R")
 
 # If this were a real package, we'd want dependency injection here
 load("./data/Global Party Survey by Expert 29 Dec 2019.RData")
@@ -35,36 +36,14 @@ party_names <- function(iso) {
 
 # ------------------------------
 
-gen_df <- function() {
-  col_names <-
-    c(
-      "PARTY",
-      "Q2.1",
-      "Q2.2",
-      "Q2.3",
-      "Q3.1",
-      "Q3.2",
-      "Q3.3",
-      "Q3.4",
-      "Q3.5",
-      "Q3.6",
-      "Q4.1",
-      "Q4.2",
-      "Q4.3",
-      "Q4.4",
-      "Q4.5",
-      "Q4.6",
-      "Q4.7",
-      "Q4.8",
-      "Q5.1",
-      "Q5.2",
-      "Q5.3",
-      "Q5.4"
-    )
-  df <- as.data.frame(matrix(nrow = 0, ncol = length(col_names)))
-  names(df) <- col_names
-  df
+party_abbreviations <- function(iso) {
+  data <- data(iso)
+
+  party_abbrs <- data[1, ] %>% select(contains("Abb"))
+  party_abbrs[party_abbrs != ""]
 }
+
+# ------------------------------
 
 get_mean_responses_for_party <- function(responses, party_index) {
   ind_exp <- paste(party_index, "$", sep = "")
@@ -73,17 +52,19 @@ get_mean_responses_for_party <- function(responses, party_index) {
 
 export("mean_responses_for_parties")
 mean_responses_for_parties <- function(iso) {
-  new_df <- gen_df()
+  new_df <- utils$gen_party_q_df()
 
   party_names <- party_names(iso)
+  party_abbvs <- party_abbreviations(iso)
   mean_responses <- mean_responses(iso)
 
   for (i in seq_along(party_names)) {
     responses <- get_mean_responses_for_party(mean_responses, i)
 
     new_df[i, 1] <- party_names[i]
-    for (j in 2:length(responses)) {
-      new_df[i, j] <- responses[j - 1]
+    new_df[i, 2] <- party_abbvs[i]
+    for (j in 1:length(responses)) {
+      new_df[i, j + 2] <- responses[j]
     }
   }
 
