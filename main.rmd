@@ -5,18 +5,119 @@ output: html_document
 
 _From the report, motivation_: The questionnaire for the Global Party Survey was administered through the Qualtrics platform. It includes 21 core items measured using ten-point continuous scales. These were designed to identify each party’s current ideological values, their position on several issues such as immigration, nationalism and environmental protection, and their use of populist rhetoric.
 ```{r setup}
+library(dplyr)
+library(ggplot2)
 lib <- modules::use("R")
+graphing <- lib$graphing
+analysis <- lib$analysis
+data <- lib$data
+
 load("./data/Global Party Survey by Party Stata V2_1_Apr_2020.RData")
+table <- data$add_influence_column(table)
 ```
 
 Questions relevant to party ideological alignment:
-* Q3.1 — Economic Alignment
-* Q3.3 — Social Alignment
+* V4 — Economic Alignment
+* V6 — Social Alignment
+
+```{r}
+graphing$alignment_histogram(table, table$V4_Scale,
+  title = "Economic Alignment, All Parties Globally",
+  x_label = "L — Economic — R"
+)
+```
+
+```{r}
+graphing$alignment_histogram(table, table$V6_Scale,
+  title = "Social Alignment, All Parties Globally",
+  x_label = "L — Social — R"
+)
+```
 
 ```{r}
 
 ```
 
+
 ```{r}
-hist(responses$Q3.3, col = "orange")
+# Because means and regressions are currently influence-weighted by country,
+# I'm not sure it makes sense to use them when examining international data.
+graphing$alignment_scatterplot(
+  table,
+  labels = FALSE,
+  scale = FALSE,
+  means = FALSE,
+  regression = FALSE,
+  title = "Global Party Alignments"
+)
+```
+
+
+```{r}
+uk_parties <- table %>% filter(table$ISO == "GBR")
+
+lr_unweighted <-
+  analysis$lr_alignment(uk_parties, influence_weighted = FALSE)
+lr_weighted <-
+  analysis$lr_alignment(uk_parties, influence_weighted = TRUE)
+
+plot <- graphing$alignment_scatterplot(uk_parties,
+  title = "British Party Alignments"
+)
+
+# Red shows the alignment without influence weighting
+# plot <-
+#   plot + geom_abline(
+#     intercept = lr_unweighted$coefficients[1],
+#     slope = lr_unweighted$coefficients[2],
+#     color = "red"
+#   )
+
+# Blue shows alignment with weighted influence
+plot + geom_abline(
+  intercept = lr_weighted$coefficients[1],
+  slope = lr_weighted$coefficients[2],
+  color = "blue"
+)
+```
+
+
+```{r}
+uk_parties <- table %>% filter(table$ISO == "GBR")
+plot1 <-
+  graphing$alignment_scatterplot(uk_parties,
+    labels = FALSE,
+    title = "British Party Alignments"
+  )
+
+fr_parties <- table %>% filter(table$ISO == "FRA")
+plot2 <-
+  graphing$alignment_scatterplot(fr_parties,
+    labels = FALSE,
+    title = "French Party Alignments"
+  )
+
+de_parties <- table %>% filter(table$ISO == "DEU")
+plot3 <-
+  graphing$alignment_scatterplot(de_parties,
+    labels = FALSE,
+    title = "German Party Alignments"
+  )
+
+jp_parties <- table %>% filter(table$ISO == "JPN")
+plot4 <-
+  graphing$alignment_scatterplot(jp_parties,
+    labels = FALSE,
+    title = "Japanese Party Alignments"
+  )
+
+graphing$plot_grid(plot1, plot2, plot3, plot4)
+```
+
+
+```{r}
+in_parties <- table %>% filter(table$ISO == "IND")
+graphing$alignment_scatterplot(in_parties,
+  title = "Indian Party Alignments"
+)
 ```

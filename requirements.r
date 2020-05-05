@@ -6,6 +6,7 @@ install.packages("styler")
 install.packages("spelling")
 install.packages("tidyverse")
 install.packages("ggrepel")
+install.packages("ggpubr")
 
 install.packages("remotes")
 remotes::install_github("lorenzwalthert/precommit")
