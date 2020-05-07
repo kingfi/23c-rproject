@@ -3,6 +3,7 @@ import(ggrepel)
 import(ggpubr)
 import(dplyr)
 import(stats)
+import(scales)
 
 analysis <- modules::use("./R/analysis.R")
 
@@ -16,14 +17,23 @@ alignment_histogram <-
   function(df,
            column,
            title = "Party Alignments",
-           x_label = "L — R") {
-    ggplot(df, aes(column, fill = ..x..)) +
+           x_label = "L — R",
+           probability = FALSE) {
+    aes <- aes(column, fill = ..x..)
+    if (probability) {
+      aes <- aes(column, y = ..density.., fill = ..x..)
+    }
+
+    plot <- ggplot(df, aes) +
       geom_histogram(binwidth = 1, na.rm = TRUE) +
       labs(
         title = title, x = x_label,
         y = "Frequency"
       ) +
       scale_fill_gradient(low = "red", high = "blue")
+
+
+    plot
   }
 
 # ------------------------------

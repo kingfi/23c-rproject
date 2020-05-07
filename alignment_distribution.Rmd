@@ -18,11 +18,56 @@ table <- data$add_influence_column(table)
 ## Alignment Distributions
 Let's look at the ideological alignments of all political parties globally and see if they adhere to some distribution. A priori, having not looked at the data, it might be reasonable to assume that they follow something of a normal distribution. In other words, we might assume that political parties tend to tack to the center (especially after weighting for influence) and that there are fewer parties to the ideological wings.
 
-Let's test this naive assumption:
+## Without Influence Weighting
+Let's test this naive assumption, first without any weighting for party influence. The mean would be $5$, the ideological center, and we might reasonably estimate the standard deviation at around $2$:
 ```{r}
-plot <- graphing$alignment_histogram(table, table$V4_Scale,
-  title = "Economic Alignment, All Parties Globally",
-  x_label = "L — Economic — R"
-)
-plot + stat_function(fun = dnorm, col = "red")
+# plot <- graphing$alignment_histogram(
+#   table,
+#   table$V4_Scale,
+#   title = "Economic Alignment, All Parties Globally",
+#   x_label = "L — Economic — R",
+#   probability = TRUE
+# )
+
+hist(table$V4_Scale)
+curve(dnorm(x, mean = 5, sd = 2), add = TRUE)
 ```
+
+```{r}
+hist(table$V6_Scale, probability = TRUE)
+curve(dnorm(x, mean = 5, sd = 2), add = TRUE)
+```
+
+We can pretty clearly see from the graphs that the native assumption is incorrect, but let's test that hypothesis. We can calculate expected counts for each of our ten bins and then run a chi-square test to see if our observed bins might likely have been drawn from the expected normal distribution. Let's do this first by integrating:
+```{r}
+data <- table$V4_Scale
+
+# Bin our original data (our histogram function did this for us above).
+observed <- 1:10
+for (i in 1:length(observed)) {
+  inds <- which((i - 1) <= data & data < i)
+  observed[i] <- length(inds)
+}
+
+density <- function(x) {
+  dnorm(x, mean = 5, sd = 2)
+}
+
+# Get proportions of results by region of normal distribution.
+bins <- 1:10
+for (i in 1:length(bins)) {
+  bins[i] <- integrate(density, lower = (i - 1), upper = i)$value
+}
+
+# Calculate expected values.
+expected <- bins * sum(observed)
+chi_sq <- sum((observed - expected)^2 / expected)
+Pvalue <- pchisq(chi_sq, 10, lower.tail = FALSE)
+Pvalue
+```
+
+Our p-value is very, very small, suggesting that there's a very, very small probability that our observed data might be drawn from an underlying normal distribution (again, with mean $5$ and standard deviation $2$). This is for economic alignment, but if we look at social alignment, it seems even more distant from the normal distribution.
+
+## Accounting for Party Influence
+
+## Finding a Bimodal Distribution
