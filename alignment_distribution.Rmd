@@ -1,0 +1,28 @@
+---
+title: "Party Alignment Distribution"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(ggplot2)
+lib <- modules::use("R")
+graphing <- lib$graphing
+analysis <- lib$analysis
+data <- lib$data
+
+load("./data/Global Party Survey by Party Stata V2_1_Apr_2020.RData")
+table <- data$add_influence_column(table)
+```
+
+## Alignment Distributions
+Let's look at the ideological alignments of all political parties globally and see if they adhere to some distribution. A priori, having not looked at the data, it might be reasonable to assume that they follow something of a normal distribution. In other words, we might assume that political parties tend to tack to the center (especially after weighting for influence) and that there are fewer parties to the ideological wings.
+
+Let's test this naive assumption:
+```{r}
+plot <- graphing$alignment_histogram(table, table$V4_Scale,
+  title = "Economic Alignment, All Parties Globally",
+  x_label = "L — Economic — R"
+)
+plot + stat_function(fun = dnorm, col = "red")
+```
