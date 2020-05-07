@@ -37,6 +37,6 @@ repos:
     rev: v2.5.0
     hooks: 
     -   id: check-added-large-files
-        args: ['--maxkb=3000']
+        args: ['--maxkb=1000']
     -   id: end-of-file-fixer
         exclude: '\.Rd'
