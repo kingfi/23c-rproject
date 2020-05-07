@@ -30,7 +30,7 @@ Let's test this naive assumption, first without any weighting for party influenc
 #   probability = TRUE
 # )
 
-hist(table$V4_Scale)
+hist(table$V4_Scale, probability = TRUE)
 curve(dnorm(x, mean = 5, sd = 2), add = TRUE)
 ```
 
@@ -72,3 +72,24 @@ Our p-value is very, very small, suggesting that there's a very, very small prob
 ## Accounting for Party Influence
 
 ## Finding a Bimodal Distribution
+
+So, this was outside the scope of the class, but our alignment histogram really looks like the underlying distribution is bimodal. More specifically, it looks like it a mixture model, with two normal distributions, might model it pretty well. We can use a package to calculate a likely model (using expectation-maximation), then we can run a chi-square test like above to see how well the model fits.
+
+```{r}
+cleaned <- table$V4_Scale[!is.na(table$V4_Scale)]
+mix_mdl <- normalmixEM(cleaned)
+
+means <- mix_mdl$mu
+means
+sigmas <- mix_mdl$sigma
+sigmas
+lambdas <- mix_mdl$lambda
+lambdas
+
+f1 <- function(x) lambdas[1] * dnorm(x, mean = means[1], sd = sigmas[1])
+f2 <- function(x) lambdas[2] * dnorm(x, mean = means[2], sd = sigmas[2])
+
+hist(table$V4_Scale, probability = TRUE)
+curve(f1, add = TRUE)
+curve(f2, add = TRUE)
+```
