@@ -6,6 +6,7 @@ output: html_document
 ```{r setup, include=FALSE}
 library(dplyr)
 library(ggplot2)
+library(mixtools)
 lib <- modules::use("R")
 graphing <- lib$graphing
 analysis <- lib$analysis
