@@ -1,0 +1,121 @@
+---
+title: "Party Alignment Distribution"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(mixtools)
+
+load("./data/Global Party Survey by Party Stata V2_1_Apr_2020.RData")
+table <- data$add_influence_column(table)
+```
+
+## Alignment Distributions
+
+Let's look at the ideological alignments of all political parties globally and see if they adhere to some distribution. We'll be looking specifically at the economic alignments of the parties along a left-right axis, as reported by local political experts.
+
+## Without Influence Weighting
+
+A priori, having not looked at the data, it might be reasonable to assume that the counts follow a normal distribution. In other words, we might assume that political parties tend to tack to the center (especially after weighting for influence) and that there are far fewer parties to either extreme.
+
+Let's test this naive assumption. We can calculate the mean and standard deviation from the data and overlay it on our histogram:
+
+```{r}
+mu <- mean(table$V4_Scale, na.rm = TRUE)
+sigma <- sd(table$V4_Scale, na.rm = TRUE)
+
+hist(table$V4_Scale, probability = TRUE)
+curve(dnorm(x, mean = mu, sd = sigma), add = TRUE)
+```
+
+We can pretty clearly see from the graphs that the naive assumption is incorrect, but let's test that hypothesis. We can calculate _expected_ counts for each of our ten bins by integrating over the distribution. Then we can run a chi-square test to see if our _observed_ bins might likely have been drawn from the normal distribution:
+
+```{r}
+data <- table$V4_Scale
+
+# Bin our original data (our histogram function did this for us above).
+observed <- 1:10
+for (i in 1:length(observed)) {
+  inds <- which((i - 1) <= data & data < i)
+  observed[i] <- length(inds)
+}
+
+density <- function(x) {
+  dnorm(x, mean = mu, sd = sigma)
+}
+
+# Get proportions of results by region of normal distribution.
+bins <- 1:10
+for (i in 1:length(bins)) {
+  bins[i] <- integrate(density, lower = (i - 1), upper = i)$value
+}
+
+# Calculate expected values.
+expected <- bins * sum(observed)
+chi_sq <- sum((observed - expected)^2 / expected)
+
+# We have ten bins and are measuring one variable, so DoF = 9
+pvalue <- pchisq(chi_sq, 9, lower.tail = FALSE)
+pvalue
+```
+
+Our p-value is very, very small, suggesting that there's a very, very small probability that our observed data was drawn from a normal distribution. We'll probably need a more complicated model to describe the data.
+
+## Accounting for Party Influence
+
+## Finding a Bimodal Distribution
+
+So, this is a little outside the scope of the class, but our histogram really looks like it has a bimodal underlying distribution. More specifically, it looks like we might want to try some kind of mixture model, maybe a mix of two normal distributions. We can use a package to calculate a likely mixture model (`mixtools`, using expectation-maximation), then we can run a chi-square test like above to see how well the model fits:
+
+```{r}
+cleaned <- table$V4_Scale[!is.na(table$V4_Scale)]
+mix_mdl <- normalmixEM(cleaned)
+
+means <- mix_mdl$mu
+sigmas <- mix_mdl$sigma
+lambdas <- mix_mdl$lambda
+
+f1 <- function(x) lambdas[1] * dnorm(x, mean = means[1], sd = sigmas[1])
+f2 <- function(x) lambdas[2] * dnorm(x, mean = means[2], sd = sigmas[2])
+
+hist(table$V4_Scale, probability = TRUE)
+curve(f1, add = TRUE)
+curve(f2, add = TRUE)
+```
+
+To run a chi-square test, we could integrate over the two normal distributions and add them, but let's try sampling this time. Our lambda values give us the proportions of the two constituent normal distributions and, therefore, the probability that any single sample is drawn from each. So we can then sample from the two normal distributions probabilistically:
+
+```{r}
+samples <- 1:1000
+for (i in samples) {
+  if (runif(1) < lambdas[1]) {
+    # Sample from the first distribution
+    samples[i] <- rnorm(1, mean = means[1], sd = sigmas[1])
+  } else {
+    # Sample from the second distribution
+    samples[i] <- rnorm(1, mean = means[2], sd = sigmas[2])
+  }
+}
+
+# Drop any samples (<0) or (>10)
+samples <- samples[samples > 0 & samples < 10]
+hist(samples)
+```
+
+This doesn't look bad at all. Let's try running our chi-square test:
+
+```{r}
+# Bin the samples
+bins <- 1:10
+for (i in 1:length(bins)) {
+  inds <- which((i - 1) <= samples & samples < i)
+  bins[i] <- length(inds)
+}
+
+
+chi_sq <- sum((observed - bins)^2 / bins)
+pvalue <- pchisq(chi_sq, 9, lower.tail = FALSE)
+pvalue
+```
+
+This p-value at least describes something in the realm of possibility, but it's still below the threshold of what we would consider _likely_. There's only a $0.6%$ chance that our observed party alignments came from this mixed distribution. This makes sense given that our sample size isn't *that* large, and, even if it were, we're analyzing such an abstract, subjective set of values that modeling is naturally very difficult.
