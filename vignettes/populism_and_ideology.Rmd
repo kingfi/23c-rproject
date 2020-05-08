@@ -1,0 +1,52 @@
+---
+title: "populism_and_ideology"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(mixtools)
+
+load("../data/Global Party Survey by Party Stata V2_1_Apr_2020.RData")
+```
+
+## Exploring Populism and Left-Right Alignment
+
+In addition to the left-right ideological alignment that most people would find familiar, our data set also measures parties on a spectrum from "pluralist" to "populist." The definitions are as follows:
+
+> POPULIST language typically challenges the legitimacy of established political institutions and emphasizes that the will of the people should prevail.
+
+> By contrast, PLURALIST rhetoric rejects these ideas, believing that elected leaders should govern, constrained by minority rights, bargaining and compromise, as well as checks and balances on executive power.
+
+We might take as a baseline assumption that, at present, global right-wing parties are generally more populist (or are, at least, perceived to be more populist). Examples include the Republican Party in the US, the BJP in India, or Jair Bolsonaro's Alianca (though technically a nascent political organization, rather than a registered party). These political organizations have an authoritarian-populist bent, but left-wing authoritarian-populist parties are popular in a number of places as well, such as the PDP-Laban in the Philippines.
+
+To explore whether there exists a correlation between left-right ideology and populism, let's first examine some contingency tables. Note that we generally explore "left" vs "right"-ness using the scalar columns in our data — these give us roughly continuous variables for ideological measures. Included in the data source, however (as part of the expert questionnaire), are two ordinal measures of party alignment, one binary and another ranging from $1$ to $4$. 
+
+Let's first take a look at the crosstabs for binary measurements of ideology and populism:
+
+```{r}
+# Rows are: 0 - Economic Left, 1 - Economic Right
+# Cols are: 0 - Pluralist, 1 - Populist
+table(table$V4_Bin, table$V8_Bin)
+```
+
+In terms of economic ideology, there doesn't seem to be much difference poportionally between pluralist vs. populist positioning. We might think that social ideology is more telling, so let's try it:
+
+```{r}
+# Rows are: 0 - Social Left, 1 - Social Right
+# Cols are: 0 - Pluralist, 1 - Populist
+table(table$V6_Bin, table$V8_Bin)
+```
+
+And we would be absolutely right! This is a fascinating result (if not a surprising one), so let's explore it further. Let's explore tabs using ordinal rather than binary categories:
+
+```{r}
+# Rows are: 0 - Social Left, 4 - Social Right
+# Cols are: 0 - Pluralist, 4 - Populist
+table(table$V6_Ord, table$V8_Ord)
+```
+
+We can see from this data that
+
+## Authoritarian vs. Libertarian Populism
+
+Another question altogether is the relationship between populism and authoritarianism more broadly. Common notions of populism, and examples like those given above, tend to couple populist ideology with authoritarian tendencies, but libertarian-populist parties do exist in a number of countries.
