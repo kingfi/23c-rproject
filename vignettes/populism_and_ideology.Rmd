@@ -1,0 +1,137 @@
+---
+title: "Populism and Ideology"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+setwd("../")
+library(dplyr)
+lib <- modules::use("./R")
+graphing <- lib$graphing
+
+load("./data/Global Party Survey by Party Stata V2_1_Apr_2020.RData")
+```
+
+## Exploring Populism and Left-Right Alignment
+
+In addition to the left-right ideological alignment that most people would find familiar, our data set also measures parties on a spectrum from "pluralist" to "populist." The definitions are as follows:
+
+> POPULIST language typically challenges the legitimacy of established political institutions and emphasizes that the will of the people should prevail.
+
+> By contrast, PLURALIST rhetoric rejects these ideas, believing that elected leaders should govern, constrained by minority rights, bargaining and compromise, as well as checks and balances on executive power.
+
+We might take as a baseline assumption that, at present, global right-wing parties are generally more populist (or are, at least, perceived to be more populist). Examples include the Republican Party in the US, the BJP in India, or Jair Bolsonaro's Alianca (though technically a nascent political organization, rather than a registered party). These political organizations have an authoritarian-populist bent, but left-wing authoritarian-populist parties are popular in a number of places as well, such as the PDP-Laban in the Philippines.
+
+To explore whether there exists a correlation between left-right ideology and populism, let's first examine some contingency tables. Note that we generally explore "left" vs "right"-ness using the scalar columns in our data — these give us roughly continuous variables for ideological measures. Included in the data source, however (as part of the expert questionnaire), are two ordinal measures of party alignment, one binary and another ranging from $1$ to $4$. 
+
+Let's first take a look at the crosstabs for binary measurements of ideology and populism:
+
+```{r}
+# Binary
+econ_align_bin <- table$V4_Bin
+soc_align_bin <- table$V6_Bin
+pop_align_bin <- table$V8_Bin
+
+# Plot
+cont <- table(econ_align_bin, pop_align_bin)
+graphing$contingency_table(cont,
+  title = "Economic Ideology — Populism",
+  x_label = "Left   —   Economic Ideology   —   Right",
+  y_label = "Pluralist      —      Populist"
+)
+```
+
+In terms of economic ideology, there doesn't seem to be much difference poportionally between pluralist vs. populist positioning. We might think that social ideology is more telling, so let's try it:
+
+```{r}
+cont <- table(soc_align_bin, pop_align_bin)
+graphing$contingency_table(cont,
+  title = "Social Ideology — Populism",
+  x_label = "Left   —   Social Ideology   —   Right",
+  y_label = "Pluralist      —      Populist"
+)
+```
+
+And we would be absolutely right! This is a fascinating result (if not a surprising one), so let's explore it further. Let's explore tabs using ordinal rather than binary categories:
+
+```{r}
+# Ordinal (1 - 4)
+econ_align_ord <- table$V4_Ord
+soc_align_ord <- table$V6_Ord
+pop_align_ord <- table$V8_Ord
+
+cont <- table(soc_align_ord, pop_align_ord)
+graphing$contingency_table(cont,
+  title = "Social Ideology — Populism",
+  x_label = "Left   —   Social Ideology   —   Right",
+  y_label = "Pluralist      —      Populist"
+)
+```
+
+This data is a little hard to interpret purely from this contingency table, but we can eyeball a couple of things. Firstly, there are a lot of very socially conservative parties, and they skew very populist. Secondly, more socially left-wing parties tend to have mixed values with regards to populism, with a preference for what we'll call "center-pluralism." In other words, there appear to be two peaks: "center-left, center-pluralist" and "hard-right, hard-populist." Remember, however, that this is only true for _social_ ideology! Let's look at the larger, ordinal contingency table for economic ideology:
+
+```{r}
+cont <- table(econ_align_ord, pop_align_ord)
+graphing$contingency_table(cont,
+  title = "Economic Ideology — Populism",
+  x_label = "Left   —   Economic Ideology   —   Right",
+  y_label = "Pluralist      —      Populist"
+)
+```
+
+There's no clear axis from one diagonal corner to another here, like there was with our social ideology table.
+
+## Scatterplot Analysis
+
+Let's repeat the above analysis with scatterplots and scalar values. This might give us a more granular view of how these different ideological metrics are correlated:
+
+```{r}
+# Continuous
+econ_align_scale <- table$V4_Scale
+soc_align_scale <- table$V6_Scale
+pop_align_scale <- table$V8_Scale
+
+graphing$scatterplot(
+  table,
+  econ_align_scale,
+  pop_align_scale,
+  means = TRUE,
+  regression = TRUE,
+  title = "Economic Ideology — Populism",
+  x_label = "Left   —   Economic Ideology   —   Right",
+  y_label = "Pluralist      —      Populist"
+)
+```
+
+Our scatterplot shows axis means with dotted lines and a linear regression, shown in red. Confirming our results above, there doesn't seem to be any correlation between economic ideology and populism. Let's even run a correlation test as a sanity check:
+
+```{r}
+# Create correlation scatterplot -- gives us a different metric
+# than the regression plot above.
+graphing$corr_scatterplot(table,
+  "V4_Scale",
+  "V8_Scale",
+  x_label = "Left   —   Economic Ideology   —   Right",
+  y_label = "Pluralist      —      Populist"
+)
+```
+
+We can see that we have a very near-zero Pearson correlation coefficient, as expected. Now let's do the same with the social ideological spectrum:
+
+```{r}
+
+graphing$scatterplot(
+  table,
+  econ_align_scale,
+  pop_align_scale,
+  means = TRUE,
+  regression = TRUE,
+  title = "Economic Ideology — Populism",
+  x_label = "Left   —   Economic Ideology   —   Right",
+  y_label = "Pluralist      —      Populist"
+)
+```
+
+## Authoritarian vs. Libertarian Populism
+
+Another question altogether is the relationship between populism and authoritarianism more broadly. Common notions of populism, and examples like those given above, tend to couple populist ideology with authoritarian tendencies, but libertarian-populist parties do exist in a number of countries.

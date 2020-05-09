@@ -9,6 +9,128 @@ analysis <- modules::use("./R/analysis.R")
 
 # ------------------------------
 
+# Converts a contingency table to a grid
+# plot, with colored cells.
+export("contingency_table")
+contingency_table <- function(cont_table,
+                              title = "",
+                              x_label = "",
+                              y_label = "") {
+  df <- as.data.frame(cont_table)
+  Var1 <- df[, 1]
+  Var2 <- df[, 2]
+
+  ggplot(df, aes(Var1, Var2)) +
+    geom_tile(aes(fill = Freq)) +
+    geom_text(aes(label = Freq), color = "white") +
+    scale_x_discrete(expand = c(0, 0)) +
+    scale_y_discrete(expand = c(0, 0)) +
+    scale_fill_gradient("Legend label", low = "lightblue", high = "blue") +
+    theme_bw() +
+    labs(title = title, x = x_label, y = y_label)
+}
+
+# ------------------------------
+
+# Generic scatterplot, with means and regression.
+# Used to build more domain-specific scatterplots.
+export("scatterplot")
+scatterplot <-
+  function(df,
+           col1,
+           col2,
+           means = FALSE,
+           regression = FALSE,
+           title = "",
+           x_label = "",
+           y_label = "") {
+    plot <- ggplot(df, aes(x = col1, y = col2)) +
+      geom_point(na.rm = TRUE) +
+      coord_cartesian() +
+      labs(
+        title = title, x = x_label,
+        y = y_label
+      )
+
+    if (means) {
+      plot <-
+        plot + geom_vline(
+          xintercept = mean(col1, na.rm = TRUE),
+          linetype = "dashed"
+        ) +
+        geom_hline(
+          yintercept = mean(col2, na.rm = TRUE),
+          linetype = "dashed"
+        )
+    }
+
+    if (regression) {
+      lr <- lm(col1 ~ col2)
+      plot <- plot + geom_abline(
+        intercept = lr$coefficients[1],
+        slope = lr$coefficients[2],
+        color = "red"
+      )
+    }
+
+    plot
+  }
+
+# ------------------------------
+
+# Create a correlation scatterplot.
+# This doesn't use ggplot and can't be
+# chained with other plots.
+export("corr_scatterplot")
+corr_scatterplot <-
+  function(df,
+           col1name,
+           col2name,
+           x_label = "",
+           y_label = "") {
+    ggscatter(
+      df,
+      x = col1name,
+      y = col2name,
+      add = "reg.line",
+      conf.int = TRUE,
+      cor.coef = TRUE,
+      cor.method = "pearson",
+      xlab = x_label,
+      ylab = y_label
+    )
+  }
+
+# ------------------------------
+
+# Utility for creating a grid of plots,
+# with two columns. Input is a vector of
+# ggplot objects.
+export("plot_grid")
+plot_grid <- function(..., hide_axis_labels = TRUE) {
+  plots <- list(...)
+
+  fn_hide_axis_labels <- function(plot) {
+    plot + theme(
+      axis.title.x = element_blank(),
+      axis.title.y = element_blank(),
+      legend.position = "none"
+    )
+  }
+
+  if (hide_axis_labels) {
+    plots <- lapply(plots, fn_hide_axis_labels)
+  }
+
+  ggarrange(
+    plotlist = plots,
+    ncol = 2,
+    nrow = (length(plots) / 2)
+  )
+}
+
+# ------------------------------
+
 # Creates a histogram from a column of your dataframe,
 # styled to show a spectrum from leftwing to rightwing
 # positions (economic or social).
@@ -101,29 +223,3 @@ alignment_scatterplot <-
   }
 
 # ------------------------------
-
-# Utility for creating a grid of plots,
-# with two columns. Input is a vector of
-# ggplot objects.
-export("plot_grid")
-plot_grid <- function(..., hide_axis_labels = TRUE) {
-  plots <- list(...)
-
-  fn_hide_axis_labels <- function(plot) {
-    plot + theme(
-      axis.title.x = element_blank(),
-      axis.title.y = element_blank(),
-      legend.position = "none"
-    )
-  }
-
-  if (hide_axis_labels) {
-    plots <- lapply(plots, fn_hide_axis_labels)
-  }
-
-  ggarrange(
-    plotlist = plots,
-    ncol = 2,
-    nrow = (length(plots) / 2)
-  )
-}
