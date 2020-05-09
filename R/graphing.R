@@ -78,6 +78,31 @@ scatterplot <-
 
 # ------------------------------
 
+# Create a correlation scatterplot.
+# This doesn't use ggplot and can't be
+# chained with other plots.
+export("corr_scatterplot")
+corr_scatterplot <-
+  function(df,
+           col1name,
+           col2name,
+           x_label = "",
+           y_label = "") {
+    ggscatter(
+      df,
+      x = col1name,
+      y = col2name,
+      add = "reg.line",
+      conf.int = TRUE,
+      cor.coef = TRUE,
+      cor.method = "pearson",
+      xlab = x_label,
+      ylab = y_label
+    )
+  }
+
+# ------------------------------
+
 # Utility for creating a grid of plots,
 # with two columns. Input is a vector of
 # ggplot objects.
