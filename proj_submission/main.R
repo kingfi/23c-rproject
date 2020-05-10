@@ -185,7 +185,8 @@ rm(list = ls())
     y_label = "Pluralist      —      Populist"
   )
   
-#Party-Alignment Distribution
+#Party-Alignment Distribution - more-detailed version (alignment_distribution.Rmd) 
+#can be found in vignettes folder
   
   library(mixtools)
   
