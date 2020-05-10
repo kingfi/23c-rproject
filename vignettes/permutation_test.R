@@ -4,7 +4,7 @@ rm(list = ls())
 # Opening the questionairre response data
 data <- read.csv("data/ResponsesByExpert.csv")
 
-# Null hypothesis - there is no significant difference in average political ideologies betweeen genders
+# Null hypothesis - there is no significant difference in average political ideologies between genders
 
 # extract gender and ideology columns
 
