@@ -1,20 +1,17 @@
 # Data Analysis Project for HES 23C
 
+This project analyzes the Global Party Survey, an expert-led survey of political parties around the globe. For full documentation surrounding both the survey and the dataset, please see the `/docs` directory of this repository.
+
+Final project submission files are saved in the `/proj_submission` directory.
+
 ## Installation
-1. `brew install pre-commit` if `pre-commit` is not already installed on your machine.
-2. Run everything in the `requirements.r` file.
-3. Hack away on the `main.rmd` notebook!
 
-## Data
-Please look through the `/docs` directory for information regarding the source and collection methods for the original data set.
-
-Of the files in the `/data` directory, the one currently in use is the dataset from April 1, 2020.
-
-(**No longer true**)
-The original data set was formatted in such a way that made per-party data exploration cumbersome. Please see the script `/data/data.R` for information on how the original table was converted to a dataframe that better fit our needs (found in `responses.RData`).
+Run everything in the `requirements.r` file.
 
 ## Structure
-All modules are saved in the `/R` folder and are imported in `main.Rmd` using the `lib` keyword. They can be accessed like so:
-```r
-usa_mean_responses <- lib$by_country$mean_responses("USA")
-```
+
+All modules are saved in the `/R` folder and are imported into both the `/vignettes` and the `/proj_submission` files.
+
+## Contributing
+
+macOS: `brew install pre-commit` if `pre-commit` is not already installed on your machine.
