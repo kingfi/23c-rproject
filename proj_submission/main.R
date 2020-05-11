@@ -1,4 +1,5 @@
 # Fianko Buckle and Travis Smith
+# !!! ADDITIONAL POINTS #22
 
 ## ----------------------------------------------------------------
 ## Setup
@@ -222,6 +223,7 @@ hist(table$V4_Scale, probability = TRUE)
 curve(f1, add = TRUE)
 curve(f2, add = TRUE)
 # !!! REQUIRED GRAPHICAL DISPLAY #3
+# !!! ADDITIONAL POINT #6
 
 # To run a chi-square test, let's try sampling this time. Our lambda values give us the proportions
 # of the two constituent normal distributions and, therefore, the probability that any single sample
@@ -331,6 +333,7 @@ graphing$contingency_table(cont,
   y_label = "Pluralist      —      Populist"
 )
 # !!! REQUIRED GRAPHICAL DISPLAY #4
+# !!! ADDITIONAL POINT #11
 
 # This data is a little hard to interpret purely from this contingency table, but
 # we can eyeball a couple of things. Firstly, there are a lot of very socially conservative
@@ -377,7 +380,8 @@ graphing$scatterplot(
 # Our scatterplot shows axis means with dotted lines and a linear regression,
 # shown in red. Confirming our results above, there doesn't seem to be any correlation
 # between economic ideology and populism. Let's even run a correlation test as a sanity check:
-# !!! ADDTIONAL POINT #9
+# !!! ADDITIONAL POINT #9
+# !!! ADDITIONAL POINT #14
 
 # Create correlation scatterplot -- gives us a different metric
 # than the regression plot above.
@@ -387,9 +391,11 @@ graphing$corr_scatterplot(table,
   x_label = "Left   —   Economic Ideology   —   Right",
   y_label = "Pluralist      —      Populist"
 )
+# !!! ADDITIONAL POINT #5
 
 # We can see that we have a very near-zero Pearson correlation coefficient,
 # as expected. Now let's do the same with the social ideological spectrum:
+# !!! ADDITIONAL POINT #16
 
 graphing$scatterplot(
   table,
@@ -410,5 +416,4 @@ graphing$corr_scatterplot(table,
   x_label = "Left   —   Social Ideology   —   Right",
   y_label = "Pluralist      —      Populist"
 )
-# !!! ADDITIONAL POINT #5
 # !!! ADDITIONAL POINT #8
