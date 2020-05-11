@@ -1,6 +1,14 @@
-# The Global Party Survey
+---
+title: "Global Party Survey"
+subtitle: "Math 23C Project  -  Summary"
+author: "Fianko Buckle & Travis James Smith"
+date: "May 11, 2020"
+output: pdf_document
+---
 
-Analysis by Fianko Buckle and Travis James Smith
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
 ## Data Source
 

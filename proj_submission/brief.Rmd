@@ -1,14 +1,18 @@
 ---
-title: "Global Party Survey — Project in Short"
-output: html_document
-author:
-- Fianko Buckle
-- Travis James Smith
+title: "Global Party Survey"
+subtitle: "Math 23C  -  Project in Short"
+author: "Fianko Buckle & Travis Smith"
+date: "May 11, 2020"
+output: 
+  pdf_document:
+    toc: true
+    toc_depth: 3
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_knit$set(root.dir = "../")
+extrafont::loadfonts(quiet = TRUE)
 
 library(dplyr)
 library(ggplot2)
@@ -145,16 +149,16 @@ pop_align_ord <- table$V8_Ord
 
 cont <- table(soc_align_ord, pop_align_ord)
 plot2 <- graphing$contingency_table(cont,
-  title = "Social Ideology — Populism",
-  x_label = "Left   —   Social Ideology   —   Right",
-  y_label = "Pluralist      —      Populist"
+  title = "Social Ideology  -  Populism",
+  x_label = "Left    -    Social Ideology    -    Right",
+  y_label = "Pluralist       -       Populist"
 )
 
 cont <- table(econ_align_ord, pop_align_ord)
 plot1 <- graphing$contingency_table(cont,
-  title = "Economic Ideology — Populism",
-  x_label = "Left   —   Economic Ideology   —   Right",
-  y_label = "Pluralist      —      Populist"
+  title = "Economic Ideology  -  Populism",
+  x_label = "Left    -    Economic Ideology    -    Right",
+  y_label = "Pluralist       -       Populist"
 )
 
 graphing$plot_grid(plot1, plot2)
@@ -173,9 +177,9 @@ plot1 <- graphing$scatterplot(
   pop_align_scale,
   means = TRUE,
   regression = TRUE,
-  title = "Economic Ideology — Populism",
-  x_label = "Left   —   Economic Ideology   —   Right",
-  y_label = "Pluralist      —      Populist"
+  title = "Economic Ideology  -  Populism",
+  x_label = "Left    -    Economic Ideology    -    Right",
+  y_label = "Pluralist       -       Populist"
 )
 
 plot2 <- graphing$scatterplot(
@@ -184,9 +188,9 @@ plot2 <- graphing$scatterplot(
   pop_align_scale,
   means = TRUE,
   regression = TRUE,
-  title = "Social Ideology — Populism",
-  x_label = "Left   —   Social Ideology   —   Right",
-  y_label = "Pluralist      —      Populist"
+  title = "Social Ideology  -  Populism",
+  x_label = "Left    -    Social Ideology    -    Right",
+  y_label = "Pluralist       -       Populist"
 )
 
 graphing$plot_grid(plot1, plot2)
@@ -198,13 +202,13 @@ And finally, with this nifty correlation scatterplot (with the calculated Pearso
 plot1 <- graphing$corr_scatterplot(table,
   "V4_Scale",
   "V8_Scale",
-  title = "Economic Ideology — Populism"
+  title = "Economic Ideology  -  Populism"
 )
 
 plot2 <- graphing$corr_scatterplot(table,
   "V6_Scale",
   "V8_Scale",
-  title = "Social Ideology — Populism"
+  title = "Social Ideology  -  Populism"
 )
 
 graphing$plot_grid(plot1, plot2)

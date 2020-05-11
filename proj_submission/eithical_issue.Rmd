@@ -1,4 +1,13 @@
-## Ethical Issues From the Correlation Between Right-Wing Social Extremism and Populism
+---
+title: "Right Wing Populism, Ethical Issues"
+author: "Fianko Buckle & Travis James Smith"
+date: "May 11, 2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
 In exploring whether or not a correlation exists between left-right ideology and pluralism in our dataset, our analysis found that many socially conservative parties skewed very populist, while more socially left-wing parties tended to have more centralized values with regards to populism. Ultimately we found that when looking at the correlation between ideology and populism, there were peaks for people who were "central-left, central pluralist" and "hard-right, hard populist".
 

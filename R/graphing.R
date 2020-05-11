@@ -183,7 +183,7 @@ alignment_histogram <-
   function(df,
            column,
            title = "Party Alignments",
-           x_label = "L — R") {
+           x_label = "L  -  R") {
     if (column == "V4_Scale") {
       plot <- ggplot(df, aes(V4_Scale, fill = ..x..))
     } else if (column == "V6_Scale") {
@@ -212,8 +212,8 @@ alignment_scatterplot <-
       geom_point(na.rm = TRUE) +
       coord_cartesian(xlim = c(0, 10), ylim = c(0, 10)) +
       labs(
-        title = title, x = "L — Economic — R",
-        y = "L — Social — R"
+        title = title, x = "L  -  Economic  -  R",
+        y = "L  -  Social  -  R"
       )
 
     # Labels shows the party abbreviations on the plot.

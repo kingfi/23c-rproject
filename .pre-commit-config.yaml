@@ -29,7 +29,8 @@ repos:
           .*\.rds|
           .*\.Rds|
           .*\.sh|
-          .*\.RData
+          .*\.RData|
+          .*\.pdf|
           )$
     -   id: style-files
         args: [--style_pkg=styler, --style_fun=tidyverse_style]    
