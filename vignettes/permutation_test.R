@@ -201,7 +201,7 @@ male_ideologies <- na.omit(ideologies[idx.male])
 fem_ideologies <- na.omit(ideologies[idx.female])
 Automate(fem_ideologies,male_ideologies, .05)
 
-#the t-test gives a confidedence interval of [0.1233620, 0.5465752]  and a pvalue of 0.00194038, 
+#the t-test gives a confidence interval of [0.1233620, 0.5465752]  and a pvalue of 0.00194038, 
 #which is lower than the chosen alpha level of 0.05. So the t-test also shows sufficient evidence
 #to reject the null hypothesis.
 
