@@ -1,37 +1,213 @@
 ---
 title: "Global Party Survey — Project in Short"
 output: html_document
+author:
+- Fianko Buckle
+- Travis James Smith
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "../")
 
 library(dplyr)
 library(ggplot2)
 library(mixtools)
-lib <- modules::use("./R")
+lib <- modules::use("../R")
 analysis <- lib$analysis
 graphing <- lib$graphing
 
-load("./data/Global Party Survey by Party Stata V2_1_Apr_2020.RData")
+load("../data/Global Party Survey by Party Stata V2_1_Apr_2020.RData")
+table <- analysis$add_influence_column(table)
 ```
 
 ## Exploratory Analysis
 
+We started the project by creating some (overly) elaborate plots for party ideology distributions. They show all of the parties in a country on an ideological scatterplot, scaled by size (with labels). Additionally, dotted lines show the mean social and economic alignments, weighted by influence. A red regression line forms a sort of ideological "axis," showing a rough visual correlation between social and economic positions:
 
-## R Markdown
-
-
-```{r cars}
-summary(cars)
+```{r, echo=FALSE}
+uk_parties <- table %>% filter(ISO == "GBR")
+graphing$alignment_scatterplot(uk_parties, title = "British Party Alignments")
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r, echo=FALSE}
+uk_parties <- table %>% filter(ISO == "JPN")
+graphing$alignment_scatterplot(uk_parties, title = "Japanese Party Alignments")
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r, echo=FALSE}
+bra_parties <- table %>% filter(table$ISO == "BRA")
+plot1 <-
+  graphing$alignment_scatterplot(bra_parties,
+    labels = FALSE,
+    title = "Brazilian Party Alignments"
+  )
+
+fr_parties <- table %>% filter(table$ISO == "FRA")
+plot2 <-
+  graphing$alignment_scatterplot(fr_parties,
+    labels = FALSE,
+    title = "French Party Alignments"
+  )
+
+phl_parties <- table %>% filter(table$ISO == "PHL")
+plot3 <-
+  graphing$alignment_scatterplot(phl_parties,
+    labels = FALSE,
+    title = "Philippine Party Alignments"
+  )
+
+mx_parties <- table %>% filter(table$ISO == "MEX")
+plot4 <-
+  graphing$alignment_scatterplot(mx_parties,
+    labels = FALSE,
+    title = "Mexican Party Alignments"
+  )
+
+graphing$plot_grid(plot1, plot2, plot3, plot4)
+```
+
+You can analyze any country this way (and perhaps this should be turned into a Shiny app). We're scaling dots according to "influence," which is a metric we calculate ourselves as an average of the party's proportional vote share and office share. This calculation needs to be adjusted to avoid the inconsistent scaling we see above, but there might not be a great way to do this based solely on the survey information.
+
+## Examining the Distribution of Party Alignments
+
+We wanted to see if there was a way to model the _global_ party distribution, knowing that the data would probably be resistant to any such analysis. Naively, you might think that parties tend towards the center in a way that a standard normal distribution would describe, but that's transparently not the case:
+
+```{r, echo=FALSE}
+mu <- mean(table$V4_Scale, na.rm = TRUE)
+sigma <- sd(table$V4_Scale, na.rm = TRUE)
+
+plot <- graphing$alignment_histogram(table, "V4_Scale", title = "Party Social Alignments")
+plot + stat_function(fun = dnorm, args = list(mean = mu, sd = sigma))
+```
+
+We thought maybe a Gaussian mixture model would better describe this data, since it's clearly bimodal, so we attempted to fit one. Our results were better, but still not entirely convincing:
+
+```{r, echo=FALSE}
+cleaned <- table$V4_Scale[!is.na(table$V4_Scale)]
+mix_mdl <- normalmixEM(cleaned, verb = FALSE)
+
+means <- mix_mdl$mu
+sigmas <- mix_mdl$sigma
+lambdas <- mix_mdl$lambda
+
+f1 <-
+  function(x) {
+    lambdas[1] * dnorm(x, mean = means[1], sd = sigmas[1])
+  }
+f2 <-
+  function(x) {
+    lambdas[2] * dnorm(x, mean = means[2], sd = sigmas[2])
+  }
+
+plot <-
+  graphing$alignment_histogram(table, "V4_Scale", title = "Party Social Alignments")
+plot + stat_function(fun = f1) + stat_function(fun = f2)
+```
+
+We ran chi-squared tests on both, deriving expected counts first from integrating and then sampling. Of course the standard normal didn't produce a likely p-value, but neither did the mixture model. We concluded that the variables producing this data are simply too complex to model without any much more significant effort.
+
+## Exploring the Relationship between Gender and Political Ideology
+
+We compared the results of a t-test and a permutation test to see if the gender of the expert respondents in the survey had any influence on their political leanings. Surprisingly, it did, and both the t-test and the permutation test confirmed that.
+
+```{r, echo=FALSE}
+data <- read.csv("./data/ResponsesByExpert.csv")
+gender <- data$R_Gender
+ideologies <- data$R_ideology
+idx.male <- which(gender == 1)
+male.avg <- mean(na.omit(ideologies[idx.male]))
+idx.female <- which(gender == 0)
+female.avg <- mean(na.omit(ideologies[idx.female]))
+obs <- male.avg - female.avg
+N <- 10000
+Diffs <- numeric(N)
+for (i in 1:N) {
+  Labels <- sample(gender)
+  idx.male.loop <- which(Labels == 1)
+  male.avg.loop <- mean(na.omit(ideologies[idx.male.loop]))
+  idx.fmale.loop <- which(Labels == 0)
+  female.avg.loop <- mean(na.omit(ideologies[idx.fmale.loop]))
+  Diffs[i] <- male.avg.loop - female.avg.loop
+}
+hist(Diffs, breaks = "Fd")
+abline(v = obs, col = "blue")
+```
+
+## Examining the Relationship Between Ideology and Populism
+
+Lastly, we examined the relationships between party ideology and the embrace of populism. We found that economic ideology _did not_ correlate with populist posturing, but that social ideology did.
+
+```{r, echo=FALSE}
+econ_align_ord <- table$V4_Ord
+soc_align_ord <- table$V6_Ord
+pop_align_ord <- table$V8_Ord
+
+cont <- table(soc_align_ord, pop_align_ord)
+plot2 <- graphing$contingency_table(cont,
+  title = "Social Ideology — Populism",
+  x_label = "Left   —   Social Ideology   —   Right",
+  y_label = "Pluralist      —      Populist"
+)
+
+cont <- table(econ_align_ord, pop_align_ord)
+plot1 <- graphing$contingency_table(cont,
+  title = "Economic Ideology — Populism",
+  x_label = "Left   —   Economic Ideology   —   Right",
+  y_label = "Pluralist      —      Populist"
+)
+
+graphing$plot_grid(plot1, plot2)
+```
+
+You can vaguely see from the contingency tables that there's a diagonal of higher values for the social graph (that isn't there for the economic graph). We can see this much more clearly with scatterplots:
+
+```{r, echo=FALSE}
+econ_align_scale <- table$V4_Scale
+soc_align_scale <- table$V6_Scale
+pop_align_scale <- table$V8_Scale
+
+plot1 <- graphing$scatterplot(
+  table,
+  econ_align_scale,
+  pop_align_scale,
+  means = TRUE,
+  regression = TRUE,
+  title = "Economic Ideology — Populism",
+  x_label = "Left   —   Economic Ideology   —   Right",
+  y_label = "Pluralist      —      Populist"
+)
+
+plot2 <- graphing$scatterplot(
+  table,
+  soc_align_scale,
+  pop_align_scale,
+  means = TRUE,
+  regression = TRUE,
+  title = "Social Ideology — Populism",
+  x_label = "Left   —   Social Ideology   —   Right",
+  y_label = "Pluralist      —      Populist"
+)
+
+graphing$plot_grid(plot1, plot2)
+```
+
+And finally, with this nifty correlation scatterplot (with the calculated Pearson correlation coefficient in the top-right):
+
+```{r, echo=FALSE}
+plot1 <- graphing$corr_scatterplot(table,
+  "V4_Scale",
+  "V8_Scale",
+  title = "Economic Ideology — Populism"
+)
+
+plot2 <- graphing$corr_scatterplot(table,
+  "V6_Scale",
+  "V8_Scale",
+  title = "Social Ideology — Populism"
+)
+
+graphing$plot_grid(plot1, plot2)
+```
+
+Note that the linear regression on these correlation plots differs from those above because these don't account for party influence.

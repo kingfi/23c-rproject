@@ -20,7 +20,7 @@ There's such a breadth of information in the data, the analytic opportunities ab
 
 We discovered a few interesting patterns --
 
-1. Global party ideology is not normally distributed, neither economically nor socially. The distribution of party alignments instead more closely follow a Gaussian mixture model, with two modes (one representing a mass of left-leaning parties, the other right-leaning).
+1. Global party ideology is not normally distributed, neither economically nor socially. The distribution of party alignments instead _more_ closely follow a Gaussian mixture model, with two modes (one representing a mass of left-leaning parties, the other right-leaning), but this model still doesn't convincingly describe the data.
 
 2. Among the political experts surveyed, gender _does_ seem to impact political preferences (or at least is very likely to). Maybe unsurprisingly, female respondents tended to possess more left-leaning ideological preferences.
 

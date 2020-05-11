@@ -5,7 +5,7 @@ import(dplyr)
 import(stats)
 import(scales)
 
-analysis <- modules::use("./R/analysis.R")
+analysis <- modules::use("../R/analysis.R")
 
 # ------------------------------
 
@@ -86,6 +86,7 @@ corr_scatterplot <-
   function(df,
            col1name,
            col2name,
+           title = FALSE,
            x_label = "",
            y_label = "") {
     ggscatter(
@@ -96,6 +97,7 @@ corr_scatterplot <-
       conf.int = TRUE,
       cor.coef = TRUE,
       cor.method = "pearson",
+      title = title,
       xlab = x_label,
       ylab = y_label
     )
@@ -236,8 +238,6 @@ alignment_scatterplot <-
     # Show the mean-lines for both axes. Weighted by influence.
     if (means) {
       economic <- weighted.mean(df$V4_Scale, df$Influence, na.rm = TRUE)
-      print(mean(df$V4_Scale))
-      print(economic)
       social <-
         weighted.mean(df$V6_Scale, df$Influence, na.rm = TRUE)
       plot <-

@@ -15,7 +15,7 @@ add_influence_column <- function(table) {
   seat_influence <- table$Type_Partysize_seat
 
   for (i in 1:nrow(table)) {
-    # Average vote and seat influence of both are available
+    # Average vote and seat influence if both are available
     if (!is.na(vote_influence[i]) & !is.na(seat_influence[i])) {
       influence[i] <- (vote_influence[i] + seat_influence[i]) / 2
     } else if (!is.na(vote_influence[i])) {
@@ -39,8 +39,7 @@ add_influence_column <- function(table) {
 export("lr_alignment")
 lr_alignment <- function(df, influence_weighted = TRUE) {
   if (influence_weighted) {
-    influence <- ((df$Type_Partysize_vote + df$Type_Partysize_seat) / 2)
-    lm(df$V6_Scale ~ df$V4_Scale, weights = influence)
+    lm(df$V6_Scale ~ df$V4_Scale, weights = df$Influence)
   } else {
     lm(df$V6_Scale ~ df$V4_Scale)
   }

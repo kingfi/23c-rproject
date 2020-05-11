@@ -88,8 +88,6 @@ graphing$alignment_barchart(table)
 
 mu <- mean(table$V4_Scale, na.rm = TRUE)
 sigma <- sd(table$V4_Scale, na.rm = TRUE)
-mu[1]
-sigma
 
 plot <- graphing$alignment_histogram(table, "V4_Scale")
 plot + stat_function(fun = dnorm, args = list(mean = mu, sd = sigma))
@@ -297,6 +295,7 @@ analysis$automate(fem_ideologies, male_ideologies, .05)
 # which is lower than the chosen alpha level of 0.05. So the t-test also shows sufficient evidence
 # to reject the null hypothesis.
 # !!! REQUIRED ANALYSIS #4
+# !!! ADDITIONAL POINT #20
 
 
 ###########################################################################
