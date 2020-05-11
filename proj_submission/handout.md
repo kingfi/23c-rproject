@@ -1,0 +1,27 @@
+# The Global Party Survey
+
+Analysis by Fianko Buckle and Travis James Smith
+
+## Data Source
+
+The Global Party Survey is an effort, started in 2019 by Harvard Political Scientist Pippa Norris, to survey the world's political parties. Data collection involves collecting completed questionnaires from political experts across the globe. Over 1,8000 experts have been questioned about more than 1,000 parties from multi-party systems across the world. More information about the survey can be found here: https://www.globalpartysurvey.org/methods
+
+We took an interest in this dataset in part because the domain is fascinating, but also because the data set itself is rich and multi-faceted. The survey includes information about parties' political alignments, the focuses of their platforms, their demographics (when available), and much more. Additionally, the data set includes information on a per-country and even a per-expert basis (allowing analysts to investigate the influence of, e.g., an expert's gender on their political preferences and ideological assessments).
+
+## Analysis
+
+There's such a breadth of information in the data, the analytic opportunities abound. Given unlimited time (and without the pressures of a global pandemic), we'd like to have explored a huge number of topics, but for the sake of this project submission we focused on three:
+
+1. The distribution of party alignments on a left-right spectrum, both economically and socially.
+
+2. The influence of experts' genders on their political preferences.
+
+3. The correlation between party ideology and populism.
+
+We discovered a few interesting patterns --
+
+1. Global party ideology is not normally distributed, neither economically nor socially. The distribution of party alignments instead more closely follow a Gaussian mixture model, with two modes (one representing a mass of left-leaning parties, the other right-leaning).
+
+2. Among the political experts surveyed, gender _does_ seem to impact political preferences (or at least is very likely to). Maybe unsurprisingly, female respondents tended to possess more left-leaning ideological preferences.
+
+3. While parties' _economic_ ideologies are almost entirely uncorrelated with populist vs. pluralist positioning, conservative _social_ ideologies do tend to correlate with extreme-populism (and left-leaning social ideologies with a more center-pluralism). This conclusion seems intuitively true, given the rising prominence of far-right populist movements across the world, but the lack of any correlation with economic ideology is fascinating.

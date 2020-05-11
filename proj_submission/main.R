@@ -47,102 +47,11 @@ load("./data/Global Party Survey by Party Stata V2_1_Apr_2020.RData")
 # document addressing one of the ethical issues explored in this dataset.
 # !!! ADDITIONAL POINT #4
 
-###########################################################################
-###########################################################################
-#
-#   Exploring the Relationship between Gender and Political Ideology
-#
-###########################################################################
-###########################################################################
-
-rm(list = ls())
-
-
-# Opening the questionairre response data
-data <- read.csv("data/ResponsesByExpert.csv")
-
-# Null hypothesis - there is no significant difference in average political ideologies between genders
-
-# extract gender and ideology columns
-
-# 1 is male, 2 is female
-gender <- data$R_Gender
-
-# ideologies range from 0 (very left) to 10 (very right).
-ideologies <- data$R_ideology
-
-# get row indices of males and females and get average ideologies for each gender
-idx.male <- which(gender == 1)
-idx.male
-male.avg <- mean(na.omit(ideologies[idx.male]))
-male.avg # 4.837
-
-idx.female <- which(gender == 0)
-idx.female
-female.avg <- mean(na.omit(ideologies[idx.female]))
-female.avg # 4.502
-
-obs <- male.avg - female.avg
-obs
-# observed difference of 0.3349686
-
-# Running a permutation test for the null hypothesis
-# num of trials
-N <- 10000
-# vector to store results
-Diffs <- numeric(N)
-
-for (i in 1:N) {
-  Labels <- sample(gender)
-
-  idx.male.loop <- which(Labels == 1)
-  male.avg.loop <- mean(na.omit(ideologies[idx.male.loop]))
-
-  idx.fmale.loop <- which(Labels == 0)
-  female.avg.loop <- mean(na.omit(ideologies[idx.fmale.loop]))
-
-  Diffs[i] <- male.avg.loop - female.avg.loop
-}
-
-
-mean(Diffs) # average difference is 0.0001830085
-
-# visual of the distribution of differences
-hist(Diffs, breaks = "Fd")
-
-abline(v = obs, col = "blue")
-
-# 1-tailed pvalue
-pv.1t <- (sum(Diffs >= obs) + 1) / (N + 1)
-pv.1t # 0.00359964
-
-# 2-tailed pvalue
-pv.2t <- 2 * pv.1t
-pv.2t # 0.00719928
-
-
-# The 2-tailed pvalue of 0.00719928 is quite low (less than .05), so there is a .7% chance that we
-# could get this observed discrepacncy in average ideology by chance. Hence there is sufficient
-# evidence against the null hypothesis.
-
-# Let's see what we get if we calculate the significance of this difference with a t-test and compare.
-# Using TA Michael Liotti's R function, Automate, we can do just this:
-
-male_ideologies <- na.omit(ideologies[idx.male])
-fem_ideologies <- na.omit(ideologies[idx.female])
-analysis$automate(fem_ideologies, male_ideologies, .05)
-
-# the t-test gives a confidence interval of [0.1233620, 0.5465752]  and a pvalue of 0.00194038,
-# which is lower than the chosen alpha level of 0.05. So the t-test also shows sufficient evidence
-# to reject the null hypothesis.
-
-# !!! A Permutation Test
-# !!! Comparison of analysis by classical methods (t-test) and simulation methods (permutation test).
 
 ###########################################################################
 ###########################################################################
 #
-#                   Party-Alignment Distribution
+#           1. Examing the Distribution of Party Alignments
 #
 ###########################################################################
 ###########################################################################
@@ -279,10 +188,104 @@ pvalue
 # large, and, even if it were, we're analyzing such an abstract, subjective set of values that modeling is
 # naturally very difficult.
 
+
 ###########################################################################
 ###########################################################################
 #
-#            Exploring Populism and Left-Right Alignment
+#   2. Exploring the Relationship between Gender and Political Ideology
+#
+###########################################################################
+###########################################################################
+
+rm(list = ls())
+
+
+# Opening the questionairre response data
+data <- read.csv("data/ResponsesByExpert.csv")
+
+# Null hypothesis - there is no significant difference in average political ideologies between genders
+
+# extract gender and ideology columns
+
+# 1 is male, 2 is female
+gender <- data$R_Gender
+
+# ideologies range from 0 (very left) to 10 (very right).
+ideologies <- data$R_ideology
+
+# get row indices of males and females and get average ideologies for each gender
+idx.male <- which(gender == 1)
+idx.male
+male.avg <- mean(na.omit(ideologies[idx.male]))
+male.avg # 4.837
+
+idx.female <- which(gender == 0)
+idx.female
+female.avg <- mean(na.omit(ideologies[idx.female]))
+female.avg # 4.502
+
+obs <- male.avg - female.avg
+obs
+# observed difference of 0.3349686
+
+# Running a permutation test for the null hypothesis
+# num of trials
+N <- 10000
+# vector to store results
+Diffs <- numeric(N)
+
+for (i in 1:N) {
+  Labels <- sample(gender)
+
+  idx.male.loop <- which(Labels == 1)
+  male.avg.loop <- mean(na.omit(ideologies[idx.male.loop]))
+
+  idx.fmale.loop <- which(Labels == 0)
+  female.avg.loop <- mean(na.omit(ideologies[idx.fmale.loop]))
+
+  Diffs[i] <- male.avg.loop - female.avg.loop
+}
+
+
+mean(Diffs) # average difference is 0.0001830085
+
+# visual of the distribution of differences
+hist(Diffs, breaks = "Fd")
+
+abline(v = obs, col = "blue")
+
+# 1-tailed pvalue
+pv.1t <- (sum(Diffs >= obs) + 1) / (N + 1)
+pv.1t # 0.00359964
+
+# 2-tailed pvalue
+pv.2t <- 2 * pv.1t
+pv.2t # 0.00719928
+
+
+# The 2-tailed pvalue of 0.00719928 is quite low (less than .05), so there is a .7% chance that we
+# could get this observed discrepacncy in average ideology by chance. Hence there is sufficient
+# evidence against the null hypothesis.
+
+# Let's see what we get if we calculate the significance of this difference with a t-test and compare.
+# Using TA Michael Liotti's R function, Automate, we can do just this:
+
+male_ideologies <- na.omit(ideologies[idx.male])
+fem_ideologies <- na.omit(ideologies[idx.female])
+analysis$automate(fem_ideologies, male_ideologies, .05)
+
+# the t-test gives a confidence interval of [0.1233620, 0.5465752]  and a pvalue of 0.00194038,
+# which is lower than the chosen alpha level of 0.05. So the t-test also shows sufficient evidence
+# to reject the null hypothesis.
+
+# !!! A Permutation Test
+# !!! Comparison of analysis by classical methods (t-test) and simulation methods (permutation test).
+
+
+###########################################################################
+###########################################################################
+#
+#      3. Examining the Relationship Between Ideology and Populism
 #
 ###########################################################################
 ###########################################################################
