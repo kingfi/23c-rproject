@@ -10,6 +10,7 @@ rm(list = ls())
 
 # Import packages
 library(dplyr)
+library(ggplot2)
 library(mixtools)
 lib <- modules::use("./R")
 analysis <- lib$analysis
@@ -60,6 +61,20 @@ load("./data/Global Party Survey by Party Stata V2_1_Apr_2020.RData")
 # Let's look at the ideological alignments of all political parties globally and see if they adhere to some distribution.
 # We'll be looking specifically at the economic alignments of the parties along a left-right axis, as reported by local political experts.
 
+# Let's start by just looking at the binary counts for the party alignments. Note that we chose
+# to use the _global_ convention of using red for left and socialist parties and blue for conservative
+# parties (in contrast to the US-centric convention).
+
+graphing$alignment_barchart(table)
+
+# We can see that the counts are roughly even for economic ideology, with a slight advantage
+# to the economic left. This is in stark contrast to the substantially higher number of
+# socially conservative parties.
+# !!! REQUIRED GRAPHICAL DISPLAY #1
+
+# Having looked at the counts, let's now to turn to the distributions.
+
+
 ## ----------------------------------------------------------------
 ## Without Influence Weighting
 ## ----------------------------------------------------------------
@@ -73,9 +88,12 @@ load("./data/Global Party Survey by Party Stata V2_1_Apr_2020.RData")
 
 mu <- mean(table$V4_Scale, na.rm = TRUE)
 sigma <- sd(table$V4_Scale, na.rm = TRUE)
+mu[1]
+sigma
 
-hist(table$V4_Scale, probability = TRUE)
-curve(dnorm(x, mean = mu, sd = sigma), add = TRUE)
+plot <- graphing$alignment_histogram(table, "V4_Scale")
+plot + stat_function(fun = dnorm, args = list(mean = mu, sd = sigma))
+# !!! REQUIRED GRAPHICAL DISPLAY #2
 
 # We can pretty clearly see from the graphs that the naive assumption is incorrect, but let's test that
 # hypothesis. We can calculate _expected_ counts for each of our ten bins by integrating over the distribution.
@@ -144,9 +162,8 @@ f2 <-
     lambdas[2] * dnorm(x, mean = means[2], sd = sigmas[2])
   }
 
-hist(table$V4_Scale, probability = TRUE)
-curve(f1, add = TRUE)
-curve(f2, add = TRUE)
+plot <- graphing$alignment_histogram(table, "V4_Scale")
+plot + stat_function(fun = f1) + stat_function(fun = f2)
 # !!! REQUIRED GRAPHICAL DISPLAY #3
 # !!! ADDITIONAL POINT #6
 
@@ -188,6 +205,9 @@ pvalue
 # large, and, even if it were, we're analyzing such an abstract, subjective set of values that modeling is
 # naturally very difficult.
 
+# TODO: Check these results, I don't think they're correct. Attempting to fit the
+# Gaussian mixture model is still cool though!
+
 
 ###########################################################################
 ###########################################################################
@@ -196,9 +216,7 @@ pvalue
 #
 ###########################################################################
 ###########################################################################
-
 rm(list = ls())
-
 
 # Opening the questionairre response data
 data <- read.csv("data/ResponsesByExpert.csv")
@@ -266,6 +284,7 @@ pv.2t # 0.00719928
 # The 2-tailed pvalue of 0.00719928 is quite low (less than .05), so there is a .7% chance that we
 # could get this observed discrepacncy in average ideology by chance. Hence there is sufficient
 # evidence against the null hypothesis.
+# !!! REQUIRED ANALYSIS #1
 
 # Let's see what we get if we calculate the significance of this difference with a t-test and compare.
 # Using TA Michael Liotti's R function, Automate, we can do just this:
@@ -277,9 +296,7 @@ analysis$automate(fem_ideologies, male_ideologies, .05)
 # the t-test gives a confidence interval of [0.1233620, 0.5465752]  and a pvalue of 0.00194038,
 # which is lower than the chosen alpha level of 0.05. So the t-test also shows sufficient evidence
 # to reject the null hypothesis.
-
-# !!! A Permutation Test
-# !!! Comparison of analysis by classical methods (t-test) and simulation methods (permutation test).
+# !!! REQUIRED ANALYSIS #4
 
 
 ###########################################################################
@@ -436,3 +453,5 @@ graphing$corr_scatterplot(table,
   y_label = "Pluralist      —      Populist"
 )
 # !!! ADDITIONAL POINT #8
+
+# The correlation here is much stronger, as we'd predicted.

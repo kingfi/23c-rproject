@@ -131,6 +131,48 @@ plot_grid <- function(..., hide_axis_labels = TRUE) {
 
 # ------------------------------
 
+bin_to_label <- function(df) {
+  econ <- df$V4_Bin
+  econ <- replace(econ, which(econ == 0), "Left")
+  econ <- replace(econ, which(econ == 1), "Right")
+  df$V4_Bin <- econ
+
+  soc <- df$V6_Bin
+  soc <- replace(soc, which(soc == 0), "Left")
+  soc <- replace(soc, which(soc == 1), "Right")
+  df$V6_Bin <- soc
+
+  df <-
+    transform(df, V4_Bin = as.character(V4_Bin), V6_Bin = as.character(V6_Bin))
+  df
+}
+
+
+# Create a barchart of binary political alignments
+export("alignment_barchart")
+alignment_barchart <- function(df) {
+  df <- bin_to_label(df)
+  nonempty <- subset(df, (!is.na(V4_Bin) & !is.na(V6_Bin)))
+
+  econ_plot <-
+    ggplot(nonempty, aes(V4_Bin, fill = ..x..)) +
+    geom_bar() +
+    labs(x = "Economic") +
+    scale_fill_gradient(low = "red", high = "blue") +
+    theme(legend.position = "none")
+
+  soc_plot <-
+    ggplot(nonempty, aes(V6_Bin, fill = ..x..)) +
+    geom_bar() +
+    labs(x = "Social") +
+    scale_fill_gradient(low = "red", high = "blue") +
+    theme(legend.position = "none")
+
+  plot_grid(econ_plot, soc_plot, hide_axis_labels = FALSE)
+}
+
+# ------------------------------
+
 # Creates a histogram from a column of your dataframe,
 # styled to show a spectrum from leftwing to rightwing
 # positions (economic or social).
@@ -139,23 +181,17 @@ alignment_histogram <-
   function(df,
            column,
            title = "Party Alignments",
-           x_label = "L — R",
-           probability = FALSE) {
-    aes <- aes(column, fill = ..x..)
-    if (probability) {
-      aes <- aes(column, y = ..density.., fill = ..x..)
+           x_label = "L — R") {
+    if (column == "V4_Scale") {
+      plot <- ggplot(df, aes(V4_Scale, fill = ..x..))
+    } else if (column == "V6_Scale") {
+      plot <- ggplot(df, aes(V6_Scale, fill = ..x..))
     }
 
-    plot <- ggplot(df, aes) +
-      geom_histogram(binwidth = 1, na.rm = TRUE) +
-      labs(
-        title = title, x = x_label,
-        y = "Frequency"
-      ) +
+    plot +
+      geom_histogram(aes(y = ..density..), binwidth = 1, na.rm = TRUE) +
+      labs(title = title, x = x_label, y = "Frequency") +
       scale_fill_gradient(low = "red", high = "blue")
-
-
-    plot
   }
 
 # ------------------------------
