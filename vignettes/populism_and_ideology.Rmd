@@ -103,7 +103,7 @@ graphing$scatterplot(
 )
 ```
 
-Our scatterplot shows axis means with dotted lines and a linear regression, shown in red. Confirming our results above, there doesn't seem to be any correlation between economic ideology and populism. Let's even run a correlation test as a sanity check:
+Our scatterplot shows axis means with dotted lines and a linear regression, shown in red. Confirming our results above, there doesn't seem to be any correlation between economic ideology and populism. Let's run a correlation test as a sanity check:
 
 ```{r}
 # Create correlation scatterplot -- gives us a different metric
@@ -119,15 +119,25 @@ graphing$corr_scatterplot(table,
 We can see that we have a very near-zero Pearson correlation coefficient, as expected. Now let's do the same with the social ideological spectrum:
 
 ```{r}
-
 graphing$scatterplot(
   table,
-  econ_align_scale,
+  soc_align_scale,
   pop_align_scale,
   means = TRUE,
   regression = TRUE,
-  title = "Economic Ideology — Populism",
-  x_label = "Left   —   Economic Ideology   —   Right",
+  title = "Social Ideology — Populism",
+  x_label = "Left   —   Social Ideology   —   Right",
+  y_label = "Pluralist      —      Populist"
+)
+```
+
+This looks a lot more promising. Let's calculate the correlation coefficient for this one too:
+
+```{r}
+graphing$corr_scatterplot(table,
+  "V6_Scale",
+  "V8_Scale",
+  x_label = "Left   —   Social Ideology   —   Right",
   y_label = "Pluralist      —      Populist"
 )
 ```
