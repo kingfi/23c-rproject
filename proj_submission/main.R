@@ -39,7 +39,7 @@ load("./data/Global Party Survey by Party Stata V2_1_Apr_2020.RData")
 # !!! ADDITIONAL POINT #10
 #
 # To quickly find any of the project requirements (including the ten additional points), search this
-# document for the following string: `#!!!`
+# document for the following string: `# !!!`
 #
 # Additionally, in the same `proj_submission` directory as this script, we've included a written
 # document addressing one of the ethical issues explored in this dataset.
