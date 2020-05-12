@@ -10,7 +10,7 @@ Run everything in the `requirements.r` file.
 
 ## Structure
 
-All modules are saved in the `/R` folder and are imported into both the `/vignettes` and the `/proj_submission` files.
+All modules are saved in the `/R` folder and are imported into both the `/vignettes` and the `/proj_submission` files. The `/proj_submission` folder also includes a brief overview pdf of the project and a handout pdf with our conclusions.
 
 ## Contributing
 
